@@ -110,8 +110,8 @@ export const displayAboutAjay = () => {
 function About() {
     return (
         <>
-            <div className="w-20 md:w-28 my-4 bg-white rounded-full overflow-hidden border-2 border-white">
-                <img className="w-full h-full object-cover" src="https://ajay-pawar.vercel.app/pic.jpeg" alt="Ajay Pawar Logo" />
+            <div className="w-20 h-20 md:w-28 md:h-28 my-4 bg-white rounded-full overflow-hidden border-2 border-white">
+                <img className="w-full h-full object-cover" src="https://plus.unsplash.com/premium_photo-1734348383114-69bd3d9f8b79?q=80&w=996&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Ajay Pawar Logo" />
             </div>
             <div className=" mt-4 md:mt-8 text-lg md:text-2xl text-center px-1">
                 <div>my name is <span className="font-bold">Ajay Pawar</span> ,</div>

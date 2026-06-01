@@ -24,13 +24,13 @@ const apps = [
         screen: displayChrome,
     },
     {
-        id: "calc",
-        title: "Calc",
-        icon: './themes/Yaru/apps/calc.png',
+        id: "spotify",
+        title: "Spotify",
+        icon: './themes/Yaru/apps/spotify.png',
         disabled: false,
         favourite: true,
         desktop_shortcut: false,
-        screen: displayTerminalCalc,
+        screen: displaySpotify, // India Top 50 Playlist 😅
     },
     {
         id: "about-ajay",
@@ -60,13 +60,13 @@ const apps = [
         screen: displayTerminal,
     },
     {
-        id: "spotify",
-        title: "Spotify",
-        icon: './themes/Yaru/apps/spotify.png',
+        id: "calc",
+        title: "Calc",
+        icon: './themes/Yaru/apps/calc.png',
         disabled: false,
         favourite: true,
         desktop_shortcut: false,
-        screen: displaySpotify, // India Top 50 Playlist 😅
+        screen: displayTerminalCalc,
     },
     {
         id: "settings",
