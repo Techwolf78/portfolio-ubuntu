@@ -122,7 +122,7 @@ function About() {
                 <div className="bg-white absolute rounded-full p-0.5 md:p-1 top-0 transform -translate-y-1/2 right-0"></div>
             </div>
             <ul className=" mt-4 leading-tight tracking-tight text-sm md:text-base w-5/6 md:w-3/4 emoji-list">
-                <li className=" list-pc">I'm a <span className=" font-medium">Software Engineer</span> based in Pune, India. Currently, I'm working full-time at <u className=' cursor-pointer '> <a href="https://gryphonacademy.co.in/" target={"_blank"} rel="noreferrer">Gryphon Academy Pvt. Ltd.</a> </u> building innovative CRM solutions. ( Hit me up <a className='text-underline' href='mailto:mrajaypawar207@gmail.com'><u>@mrajaypawar207@gmail.com</u></a> :) )</li>
+                <li className=" list-pc">I'm a <span className=" font-medium">Software Engineer</span> based in Pune, India. Currently, I'm working full-time at <u className=' cursor-pointer '> <a href="https://gryphonacademy.co.in/" target={"_blank"} rel="noreferrer">Gryphon Academy Pvt. Ltd.</a> </u> building innovative CRM solutions. ( Hit me up <a className='text-underline' href='mailto:ajaypawargryphon@gmail.com'><u>@ajaypawargryphon@gmail.com</u></a> :) )</li>
                 <li className=" mt-3 list-building"> I enjoy building scalable applications, designing beautiful user interfaces, and automating complex workflows.</li>
                 <li className=" mt-3 list-time"> When I am not coding my next project, I like to design UI/UX concepts, contribute to open-source, or read up on SaaS architectures.</li>
                 <li className=" mt-3 list-star"> I've also done extensive work with Firebase, Node.js, AWS, and modern animated frontends using GSAP/Three.js!</li>
@@ -366,6 +366,6 @@ function Projects() {
 }
 function Resume() {
     return (
-        <iframe className="h-full w-full" src="./files/Ajay-Pawar-Resume.pdf" title="ajay pawar resume" frameBorder="0"></iframe>
+        <iframe className="h-full w-full" src="./files/Ajay_Pawar_Resume.pdf" title="ajay pawar resume" frameBorder="0"></iframe>
     )
 }

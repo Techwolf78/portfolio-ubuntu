@@ -23,7 +23,7 @@ export class Nautilus extends Component {
                 ],
                 'Projects': [
                     { name: 'ubuntu-portfolio.txt', type: 'file', content: 'Ubuntu OS Portfolio:\n- Interactive desktop environment.\n- Integrated mock Terminal, Gedit, Chrome, VS Code.\n- Pure React and Tailwind CSS implementation.' },
-                    { name: 'personal-website.txt', type: 'file', content: 'Official Web Portfolio:\n- Hosted at: https://ajay-pawar.vercel.app/\n- Showcasing key production work, assets, and contacts.' }
+                    { name: 'personal-website.txt', type: 'file', content: 'Official Web Portfolio:\n- Hosted at: https://ajaypawar.dpdns.org/\n- Showcasing key production work, assets, and contacts.' }
                 ]
             }
         };

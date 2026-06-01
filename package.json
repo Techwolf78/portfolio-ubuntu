@@ -2,7 +2,7 @@
   "name": "ajay-pawar-portfolio",
   "version": "2.0.0",
   "private": true,
-  "homepage": "https://ajay-pawar.vercel.app/",
+  "homepage": "https://ajaypawar.dpdns.org/",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
