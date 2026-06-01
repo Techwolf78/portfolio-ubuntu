@@ -13,7 +13,7 @@ export default class Navbar extends Component {
 
 	render() {
 		return (
-			<div className="main-navbar-vp absolute top-0 right-0 w-screen shadow-md flex flex-nowrap justify-between items-center bg-ub-grey text-ubt-grey text-sm select-none z-50">
+			<div className="main-navbar-vp fixed top-0 right-0 w-screen shadow-md flex flex-nowrap justify-between items-center bg-ub-grey text-ubt-grey text-sm select-none z-[60]">
 				<div
 					tabIndex="0"
 					className={
@@ -41,7 +41,11 @@ export default class Navbar extends Component {
 						'relative pr-3 pl-3 outline-none transition duration-100 ease-in-out border-b-2 border-transparent focus:border-ubb-orange py-1 '
 					}
 				>
-					<Status />
+					<Status 
+						wifi={this.props.wifi}
+						volume={this.props.volume}
+						muteSound={this.props.muteSound}
+					/>
 					<StatusCard
 						shutDown={this.props.shutDown}
 						lockScreen={this.props.lockScreen}
@@ -50,6 +54,14 @@ export default class Navbar extends Component {
 							// this prop is used in statusCard component in handleClickOutside callback using react-onclickoutside
 							this.setState({ status_card: false });
 						}}
+						volume={this.props.volume}
+						brightness={this.props.brightness}
+						wifi={this.props.wifi}
+						muteSound={this.props.muteSound}
+						changeVolume={this.props.changeVolume}
+						changeBrightness={this.props.changeBrightness}
+						toggleWifi={this.props.toggleWifi}
+						toggleMuteSound={this.props.toggleMuteSound}
 					/>
 				</div>
 			</div>

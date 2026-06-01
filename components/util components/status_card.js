@@ -23,34 +23,20 @@ export class StatusCard extends Component {
 	constructor() {
 		super();
 		this.wrapperRef = React.createRef();
-		this.state = {
-			sound_level: 75, // better of setting default values from localStorage
-			brightness_level: 100 // setting default value to 100 so that by default its always full.
-		};
 	}
 	handleClickOutside = () => {
 		this.props.toggleVisible();
 	};
 	componentDidMount() {
-		this.setState({
-			sound_level: localStorage.getItem('sound-level') || 75,
-			brightness_level: localStorage.getItem('brightness-level') || 100
-		}, () => {
-			document.getElementById('monitor-screen').style.filter = `brightness(${3 / 400 * this.state.brightness_level +
-				0.25})`;
-		})
+		// State is handled globally in ubuntu.js
 	}
 
 	handleBrightness = (e) => {
-		this.setState({ brightness_level: e.target.value });
-		localStorage.setItem('brightness-level', e.target.value);
-		// the function below inside brightness() is derived from a linear equation such that at 0 value of slider brightness still remains 0.25 so that it doesn't turn black.
-		document.getElementById('monitor-screen').style.filter = `brightness(${3 / 400 * e.target.value + 0.25})`; // Using css filter to adjust the brightness in the root div.
+		this.props.changeBrightness(e.target.value);
 	};
 
 	handleSound = (e) => {
-		this.setState({ sound_level: e.target.value });
-		localStorage.setItem('sound-level', e.target.value);
+		this.props.changeVolume(e.target.value);
 	};
 
 	render() {
@@ -58,7 +44,7 @@ export class StatusCard extends Component {
 			<div
 				ref={this.wrapperRef}
 				className={
-					'absolute bg-ub-cool-grey rounded-md py-4 top-9 right-3 shadow border-black border border-opacity-20 status-card' +
+					'absolute bg-ub-cool-grey rounded-md py-4 top-9 right-3 shadow border-black border border-opacity-20 status-card z-50' +
 					(this.props.visible ? ' visible animateShow' : ' invisible')
 				}
 			>
@@ -67,12 +53,12 @@ export class StatusCard extends Component {
 				<div className="absolute w-0 h-0 -top-1 right-6 top-arrow-up" />
 				<div className="w-64 py-1.5 flex items-center justify-center bg-ub-cool-grey hover:bg-ub-warm-grey hover:bg-opacity-20">
 					<div className="w-8">
-						<img width="16px" height="16px" src="./themes/Yaru/status/audio-headphones-symbolic.svg" alt="ubuntu headphone" />
+						<img width="16px" height="16px" src="./themes/Yaru/status/audio-headphones-symbolic.svg" alt="ubuntu headphone" className={this.props.muteSound ? "opacity-30" : ""} />
 					</div>
 					<Slider
 						onChange={this.handleSound}
 						className="ubuntu-slider w-2/3"
-						value={this.state.sound_level}
+						value={this.props.volume}
 						name="headphone_range"
 					/>
 				</div>
@@ -84,18 +70,21 @@ export class StatusCard extends Component {
 						onChange={this.handleBrightness}
 						className="ubuntu-slider w-2/3"
 						name="brightness_range"
-						value={this.state.brightness_level}
+						value={this.props.brightness}
 					/>
 				</div>
 				<div className="w-64 flex content-center justify-center">
 					<div className="w-2/4 border-black border-opacity-50 border-b my-2 border-solid" />
 				</div>
-				<div className="w-64 py-1.5 flex items-center justify-center bg-ub-cool-grey hover:bg-ub-warm-grey hover:bg-opacity-20">
+				<div 
+					onClick={this.props.toggleWifi}
+					className="w-64 py-1.5 flex items-center justify-center bg-ub-cool-grey hover:bg-ub-warm-grey hover:bg-opacity-20 cursor-pointer"
+				>
 					<div className="w-8">
-						<img width="16px" height="16px" src="./themes/Yaru/status/network-wireless-signal-good-symbolic.svg" alt="ubuntu wifi" />
+						<img width="16px" height="16px" src="./themes/Yaru/status/network-wireless-signal-good-symbolic.svg" alt="ubuntu wifi" className={this.props.wifi ? "" : "opacity-30"} />
 					</div>
-					<div className="w-2/3 flex items-center justify-between text-gray-400">
-						<span>OnePlus 8 Pro</span>
+					<div className={"w-2/3 flex items-center justify-between " + (this.props.wifi ? "text-white" : "text-gray-400")}>
+						<span>{this.props.wifi ? "OnePlus 8 Pro" : "Disconnected"}</span>
 						<SmallArrow angle="right" />
 					</div>
 				</div>
@@ -121,8 +110,19 @@ export class StatusCard extends Component {
 					<div className="w-2/4 border-black border-opacity-50 border-b my-2 border-solid" />
 				</div>
 				<div
+					onClick={this.props.toggleMuteSound}
+					className="w-64 py-1.5 flex items-center justify-center bg-ub-cool-grey hover:bg-ub-warm-grey hover:bg-opacity-20 cursor-pointer"
+				>
+					<div className="w-8">
+						<img width="16px" height="16px" src="./themes/Yaru/status/audio-headphones-symbolic.svg" alt="ubuntu sound status" className={this.props.muteSound ? "opacity-30" : ""} />
+					</div>
+					<div className="w-2/3 flex items-center justify-between">
+						<span>Startup Sound: {this.props.muteSound ? "Muted" : "On"}</span>
+					</div>
+				</div>
+				<div
 					id="open-settings"
-					className="w-64 py-1.5 flex items-center justify-center bg-ub-cool-grey hover:bg-ub-warm-grey hover:bg-opacity-20"
+					className="w-64 py-1.5 flex items-center justify-center bg-ub-cool-grey hover:bg-ub-warm-grey hover:bg-opacity-20 cursor-pointer"
 				>
 					<div className="w-8">
 						<img width="16px" height="16px" src="./themes/Yaru/status/emblem-system-symbolic.svg" alt="ubuntu settings" />
@@ -133,7 +133,7 @@ export class StatusCard extends Component {
 				</div>
 				<div
 					onClick={this.props.lockScreen}
-					className="w-64 py-1.5 flex items-center justify-center bg-ub-cool-grey hover:bg-ub-warm-grey hover:bg-opacity-20"
+					className="w-64 py-1.5 flex items-center justify-center bg-ub-cool-grey hover:bg-ub-warm-grey hover:bg-opacity-20 cursor-pointer"
 				>
 					<div className="w-8">
 						<img width="16px" height="16px" src="./themes/Yaru/status/changes-prevent-symbolic.svg" alt="ubuntu lock" />
@@ -144,7 +144,7 @@ export class StatusCard extends Component {
 				</div>
 				<div
 					onClick={this.props.shutDown}
-					className="w-64 py-1.5 flex items-center justify-center bg-ub-cool-grey hover:bg-ub-warm-grey hover:bg-opacity-20"
+					className="w-64 py-1.5 flex items-center justify-center bg-ub-cool-grey hover:bg-ub-warm-grey hover:bg-opacity-20 cursor-pointer"
 				>
 					<div className="w-8">
 						<img width="16px" height="16px" src="./themes/Yaru/status/system-shutdown-symbolic.svg" alt="ubuntu power" />

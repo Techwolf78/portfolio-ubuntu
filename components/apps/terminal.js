@@ -12,16 +12,17 @@ export class Terminal extends Component {
         this.prev_commands = [];
         this.commands_index = -1;
         this.child_directories = {
-            root: ["books", "projects", "personal-documents", "skills", "languages", "PDPU", "interests"],
-            PDPU: ["Sem-6"],
+            root: ["books", "projects", "personal-documents", "skills", "languages", "ExcelR", "interests"],
+            ExcelR: ["Java-Full-Stack"],
             books: ["Eric-Jorgenson_The-Almanack-of-Naval-Ravikant.pdf", "Elon Musk: How the Billionaire CEO of SpaceX.pdf", "The $100 Startup_CHRIS_GUILLEBEAU.pdf", "The_Magic_of_Thinking_Big.pdf"],
-            skills: ["Front-end development", "React.js", "jQuery", "Flutter", "Express.js", "SQL", "Firebase"],
-            projects: ["vivek9patel-personal-portfolio", "synonyms-list-react", "economist.com-unlocked", "Improve-Codeforces", "flutter-banking-app", "Meditech-Healthcare", "CPU-Scheduling-APP-React-Native"],
+            skills: ["JavaScript", "React.js", "TypeScript", "Node.js", "Python", "UI-UX-Design", "AWS", "GraphQL"],
+            projects: ["Knest", "Gryphon-Academy-Website", "PlayStation-Showcase", "CRM-Web-Application", "HR-Attendance-System", "ShineX"],
             interests: ["Software Engineering", "Deep Learning", "Computer Vision"],
-            languages: ["Javascript", "C++", "Java", "Dart"],
+            languages: ["JavaScript", "TypeScript", "Python", "Java", "SQL"],
         };
         this.state = {
             terminal: [],
+            theme: 'aubergine'
         }
     }
 
@@ -56,7 +57,7 @@ export class Terminal extends Component {
             <React.Fragment key={id}>
                 <div className="flex w-full h-5">
                     <div className="flex">
-                        <div className=" text-ubt-green">vivek@Dell</div>
+                        <div className=" text-ubt-green">ajay@Dell</div>
                         <div className="text-white mx-px font-medium">:</div>
                         <div className=" text-ubt-blue">{this.current_directory}</div>
                         <div className="text-white mx-px font-medium mr-1">$</div>
@@ -119,42 +120,53 @@ export class Terminal extends Component {
             if (command.length !== 0) {
                 this.removeCursor(terminal_row_id);
                 this.handleCommands(command, terminal_row_id);
+                this.prev_commands.push(command);
+                this.commands_index = this.prev_commands.length;
             }
-            else return;
-            // push to history
-            this.prev_commands.push(command);
-            this.commands_index = this.prev_commands.length - 1;
-
+            else {
+                this.removeCursor(terminal_row_id);
+                this.appendTerminalRow();
+            }
             this.clearInput(terminal_row_id);
         }
         else if (e.key === "ArrowUp") {
-            let prev_command;
-
-            if (this.commands_index <= -1) prev_command = "";
-            else prev_command = this.prev_commands[this.commands_index];
-
+            e.preventDefault();
+            if (this.prev_commands.length === 0) return;
             let terminal_row_id = $(e.target).data("row-id");
-
+            this.commands_index = Math.max(0, this.commands_index - 1);
+            let prev_command = this.prev_commands[this.commands_index];
             $(`input#terminal-input-${terminal_row_id}`).val(prev_command);
-            $(`#show-${terminal_row_id}`).text(prev_command);
-
-            this.commands_index--;
+            $(`#cmd span#show-${terminal_row_id}`).text(prev_command);
         }
         else if (e.key === "ArrowDown") {
-            let prev_command;
-
-            if (this.commands_index >= this.prev_commands.length) return;
-            if (this.commands_index <= -1) this.commands_index = 0;
-
-            if (this.commands_index === this.prev_commands.length) prev_command = "";
-            else prev_command = this.prev_commands[this.commands_index];
-
+            e.preventDefault();
             let terminal_row_id = $(e.target).data("row-id");
-
-            $(`input#terminal-input-${terminal_row_id}`).val(prev_command);
-            $(`#show-${terminal_row_id}`).text(prev_command);
-
-            this.commands_index++;
+            if (this.commands_index >= this.prev_commands.length - 1) {
+                this.commands_index = this.prev_commands.length;
+                $(`input#terminal-input-${terminal_row_id}`).val("");
+                $(`#cmd span#show-${terminal_row_id}`).text("");
+            } else {
+                this.commands_index = Math.min(this.prev_commands.length - 1, this.commands_index + 1);
+                let next_command = this.prev_commands[this.commands_index];
+                $(`input#terminal-input-${terminal_row_id}`).val(next_command);
+                $(`#cmd span#show-${terminal_row_id}`).text(next_command);
+            }
+        }
+        else if (e.key === "Tab") {
+            e.preventDefault();
+            let terminal_row_id = $(e.target).data("row-id");
+            let inputVal = $(`input#terminal-input-${terminal_row_id}`).val();
+            let words = inputVal.split(' ');
+            let lastWord = words[words.length - 1];
+            if (lastWord) {
+                let matches = (this.child_directories[this.curr_dir_name] || []).filter(dir => dir.toLowerCase().startsWith(lastWord.toLowerCase()));
+                if (matches.length === 1) {
+                    words[words.length - 1] = matches[0];
+                    let completed = words.join(' ');
+                    $(`input#terminal-input-${terminal_row_id}`).val(completed);
+                    $(`#cmd span#show-${terminal_row_id}`).text(completed);
+                }
+            }
         }
     }
 
@@ -239,13 +251,13 @@ export class Terminal extends Component {
                 break;
             case "pwd":
                 let str = this.current_directory;
-                result = str.replace("~", "/home/vivek")
+                result = str.replace("~", "/home/ajay")
                 break;
             case "code":
                 if (words[0] === "." || words.length === 0) {
                     this.props.openApp("vscode");
                 } else {
-                    result = "Command '" + main + "' not found, or not yet implemented.<br>Available Commands:[ cd, ls, pwd, echo, clear, exit, mkdir, code, spotify, chrome, about-vivek, todoist, trash, settings, sendmsg]";
+                    result = "Command '" + main + "' not found, or not yet implemented.<br>Available Commands:[ cd, ls, pwd, echo, clear, exit, mkdir, code, spotify, chrome, about-ajay, todoist, trash, settings, sendmsg]";
                 }
                 break;
             case "echo":
@@ -255,56 +267,56 @@ export class Terminal extends Component {
                 if (words[0] === "." || words.length === 0) {
                     this.props.openApp("spotify");
                 } else {
-                    result = "Command '" + main + "' not found, or not yet implemented.<br>Available Commands: [ cd, ls, pwd, echo, clear, exit, mkdir, code, spotify, chrome, about-vivek, todoist, trash, settings, sendmsg ]";
+                    result = "Command '" + main + "' not found, or not yet implemented.<br>Available Commands: [ cd, ls, pwd, echo, clear, exit, mkdir, code, spotify, chrome, about-ajay, todoist, trash, settings, sendmsg ]";
                 }
                 break;
             case "chrome":
                 if (words[0] === "." || words.length === 0) {
                     this.props.openApp("chrome");
                 } else {
-                    result = "Command '" + main + "' not found, or not yet implemented.<br>Available Commands: [ cd, ls, pwd, echo, clear, exit, mkdir, code, spotify, chrome, about-vivek, todoist, trash, settings, sendmsg ]";
+                    result = "Command '" + main + "' not found, or not yet implemented.<br>Available Commands: [ cd, ls, pwd, echo, clear, exit, mkdir, code, spotify, chrome, about-ajay, todoist, trash, settings, sendmsg ]";
                 }
                 break;
             case "todoist":
                 if (words[0] === "." || words.length === 0) {
                     this.props.openApp("todo-ist");
                 } else {
-                    result = "Command '" + main + "' not found, or not yet implemented.<br>Available Commands: [ cd, ls, pwd, echo, clear, exit, mkdir, code, spotify, chrome, about-vivek, todoist, trash, settings, sendmsg ]";
+                    result = "Command '" + main + "' not found, or not yet implemented.<br>Available Commands: [ cd, ls, pwd, echo, clear, exit, mkdir, code, spotify, chrome, about-ajay, todoist, trash, settings, sendmsg ]";
                 }
                 break;
             case "trash":
                 if (words[0] === "." || words.length === 0) {
                     this.props.openApp("trash");
                 } else {
-                    result = "Command '" + main + "' not found, or not yet implemented.<br>Available Commands: [ cd, ls, pwd, echo, clear, exit, mkdir, code, spotify, chrome, about-vivek, todoist, trash, settings, sendmsg ]";
+                    result = "Command '" + main + "' not found, or not yet implemented.<br>Available Commands: [ cd, ls, pwd, echo, clear, exit, mkdir, code, spotify, chrome, about-ajay, todoist, trash, settings, sendmsg ]";
                 }
                 break;
-            case "about-vivek":
+            case "about-ajay":
                 if (words[0] === "." || words.length === 0) {
-                    this.props.openApp("about-vivek");
+                    this.props.openApp("about-ajay");
                 } else {
-                    result = "Command '" + main + "' not found, or not yet implemented.<br>Available Commands: [ cd, ls, pwd, echo, clear, exit, mkdir, code, spotify, chrome, about-vivek, todoist, trash, settings, sendmsg ]";
+                    result = "Command '" + main + "' not found, or not yet implemented.<br>Available Commands: [ cd, ls, pwd, echo, clear, exit, mkdir, code, spotify, chrome, about-ajay, todoist, trash, settings, sendmsg ]";
                 }
                 break;
             case "terminal":
                 if (words[0] === "." || words.length === 0) {
                     this.props.openApp("terminal");
                 } else {
-                    result = "Command '" + main + "' not found, or not yet implemented.<br>Available Commands: [ cd, ls, pwd, echo, clear, exit, mkdir, code, spotify, chrome, about-vivek, todoist, trash, settings, sendmsg ]";
+                    result = "Command '" + main + "' not found, or not yet implemented.<br>Available Commands: [ cd, ls, pwd, echo, clear, exit, mkdir, code, spotify, chrome, about-ajay, todoist, trash, settings, sendmsg ]";
                 }
                 break;
             case "settings":
                 if (words[0] === "." || words.length === 0) {
                     this.props.openApp("settings");
                 } else {
-                    result = "Command '" + main + "' not found, or not yet implemented.<br>Available Commands: [ cd, ls, pwd, echo, clear, exit, mkdir, code, spotify, chrome, about-vivek, todoist, trash, settings, sendmsg ]";
+                    result = "Command '" + main + "' not found, or not yet implemented.<br>Available Commands: [ cd, ls, pwd, echo, clear, exit, mkdir, code, spotify, chrome, about-ajay, todoist, trash, settings, sendmsg ]";
                 }
                 break;
             case "sendmsg":
                 if (words[0] === "." || words.length === 0) {
                     this.props.openApp("gedit");
                 } else {
-                    result = "Command '" + main + "' not found, or not yet implemented.<br>Available Commands: [ cd, ls, pwd, echo, clear, exit, mkdir, code, spotify, chrome, about-vivek, todoist, trash, settings, sendmsg ]";
+                    result = "Command '" + main + "' not found, or not yet implemented.<br>Available Commands: [ cd, ls, pwd, echo, clear, exit, mkdir, code, spotify, chrome, about-ajay, todoist, trash, settings, sendmsg ]";
                 }
                 break;
             case "clear":
@@ -312,8 +324,7 @@ export class Terminal extends Component {
                 return;
             case "exit":
                 this.closeTerminal();
-                return;
-            case "sudo":
+                             case "sudo":
 
                 ReactGA.event({
                     category: "Sudo Access",
@@ -322,8 +333,15 @@ export class Terminal extends Component {
 
                 result = "<img class=' w-2/5' src='./images/memes/used-sudo-command.webp' />";
                 break;
+            case "theme-switch":
+                const themes = ['aubergine', 'matrix', 'blue', 'light'];
+                const currentIdx = themes.indexOf(this.state.theme || 'aubergine');
+                const nextTheme = themes[(currentIdx + 1) % themes.length];
+                this.setState({ theme: nextTheme });
+                result = `Switched terminal theme to: ${nextTheme}`;
+                break;
             default:
-                result = "Command '" + main + "' not found, or not yet implemented.<br>Available Commands: [ cd, ls, pwd, echo, clear, exit, mkdir, code, spotify, chrome, about-vivek, todoist, trash, settings, sendmsg ]";
+                result = "Command '" + main + "' not found, or not yet implemented.<br>Available Commands: [ cd, ls, pwd, echo, clear, exit, mkdir, code, spotify, chrome, about-ajay, todoist, trash, settings, sendmsg, theme-switch ]";
         }
         document.getElementById(`row-result-${rowId}`).innerHTML = result;
         this.appendTerminalRow();
@@ -352,8 +370,17 @@ export class Terminal extends Component {
     }
 
     render() {
+        let themeClass = "bg-ub-drk-abrgn text-white";
+        if (this.state.theme === 'matrix') {
+            themeClass = "bg-black text-green-400 font-mono";
+        } else if (this.state.theme === 'blue') {
+            themeClass = "bg-blue-900 text-yellow-300 font-mono";
+        } else if (this.state.theme === 'light') {
+            themeClass = "bg-gray-100 text-gray-900";
+        }
+
         return (
-            <div className="h-full w-full bg-ub-drk-abrgn text-white text-sm font-bold" id="terminal-body">
+            <div className={`h-full w-full p-2 overflow-y-auto text-sm font-bold ${themeClass}`} id="terminal-body">
                 {
                     this.state.terminal
                 }

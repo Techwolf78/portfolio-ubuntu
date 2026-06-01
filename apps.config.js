@@ -5,8 +5,13 @@ import { displaySettings } from './components/apps/settings';
 import { displayChrome } from './components/apps/chrome';
 import { displayTrash } from './components/apps/trash';
 import { displayGedit } from './components/apps/gedit';
-import { displayAboutVivek } from './components/apps/vivek';
+import { displayAboutAjay } from './components/apps/ajay';
 import { displayTerminalCalc } from './components/apps/calc';
+import { displayNautilus } from './components/apps/nautilus';
+import { displaySystemMonitor } from './components/apps/system_monitor';
+import { displaySnake } from './components/apps/snake';
+import { displayWeather } from './components/apps/weather';
+import { displayGeditEditor } from './components/apps/gedit_editor';
 
 const apps = [
     {
@@ -28,13 +33,13 @@ const apps = [
         screen: displayTerminalCalc,
     },
     {
-        id: "about-vivek",
-        title: "About Vivek",
+        id: "about-ajay",
+        title: "About Ajay",
         icon: './themes/Yaru/system/user-home.png',
         disabled: false,
         favourite: true,
         desktop_shortcut: true,
-        screen: displayAboutVivek,
+        screen: displayAboutAjay,
     },
     {
         id: "vscode",
@@ -91,6 +96,51 @@ const apps = [
         screen: displayGedit,
     },
     {
+        id: "nautilus",
+        title: "Files",
+        icon: './themes/Yaru/system/folder.png',
+        disabled: false,
+        favourite: true,
+        desktop_shortcut: true,
+        screen: displayNautilus,
+    },
+    {
+        id: "system-monitor",
+        title: "System Monitor",
+        icon: './themes/Yaru/status/experience.svg',
+        disabled: false,
+        favourite: true,
+        desktop_shortcut: true,
+        screen: displaySystemMonitor,
+    },
+    {
+        id: "snake",
+        title: "Snake Game",
+        icon: './themes/Yaru/status/skills.svg',
+        disabled: false,
+        favourite: false,
+        desktop_shortcut: true,
+        screen: displaySnake,
+    },
+    {
+        id: "weather",
+        title: "Weather",
+        icon: './themes/Yaru/status/projects.svg',
+        disabled: false,
+        favourite: false,
+        desktop_shortcut: true,
+        screen: displayWeather,
+    },
+    {
+        id: "gedit_editor",
+        title: "Text Editor",
+        icon: './themes/Yaru/apps/gedit.png',
+        disabled: false,
+        favourite: true,
+        desktop_shortcut: true,
+        screen: displayGeditEditor,
+    },
+    {
         id: "github",
         title: "GitHub",
         icon: './themes/Yaru/apps/github.png',
@@ -98,18 +148,18 @@ const apps = [
         favourite: false,
         desktop_shortcut: true,
         isExternalApp: true,
-        url: "https://github.com/vivek9patel",
+        url: "https://github.com/Techwolf78",
         screen: () => {},
     },
     {
         id: "tars",
-        title: "Ask Tars",
+        title: "Ajay Portfolio",
         icon: './themes/Yaru/apps/tars.svg',
         disabled: false,
         favourite: false,
         desktop_shortcut: true,
         isExternalApp: true,
-        url: "https://www.vivek9patel.com/tars"
+        url: "https://ajay-pawar.vercel.app/"
     },
 ]
 

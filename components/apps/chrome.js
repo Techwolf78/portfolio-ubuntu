@@ -74,11 +74,36 @@ export class Chrome extends Component {
         );
     }
 
+    renderOfflineScreen = () => {
+        return (
+            <div className="flex-grow flex flex-col items-center justify-center bg-[#f7f7f7] text-[#5f6368] p-8 select-none font-sans">
+                <div className="max-w-md w-full text-left">
+                    <div className="text-6xl mb-6">🦖</div>
+                    <h1 className="text-xl font-medium text-[#202124] mb-4">No internet</h1>
+                    <p className="text-sm mb-4 leading-relaxed">
+                        Try:
+                    </p>
+                    <ul className="list-disc list-inside text-sm mb-6 space-y-1 pl-2">
+                        <li>Checking the network cables, modem, and router</li>
+                        <li>Reconnecting to Wi-Fi</li>
+                    </ul>
+                    <p className="text-xs text-[#8f9397] uppercase tracking-wider font-mono">
+                        ERR_INTERNET_DISCONNECTED
+                    </p>
+                </div>
+            </div>
+        );
+    }
+
     render() {
         return (
             <div className="h-full w-full flex flex-col bg-ub-cool-grey">
                 {this.displayUrlBar()}
-                <iframe src={this.state.url} className="flex-grow" id="chrome-screen" frameBorder="0" title="Ubuntu Chrome Url"></iframe>
+                {this.props.wifi === false ? (
+                    this.renderOfflineScreen()
+                ) : (
+                    <iframe src={this.state.url} className="flex-grow" id="chrome-screen" frameBorder="0" title="Ubuntu Chrome Url"></iframe>
+                )}
             </div>
         )
     }
@@ -86,6 +111,6 @@ export class Chrome extends Component {
 
 export default Chrome
 
-export const displayChrome = () => {
-    return <Chrome> </Chrome>;
+export const displayChrome = (windowProps) => {
+    return <Chrome wifi={windowProps?.wifi}> </Chrome>;
 }

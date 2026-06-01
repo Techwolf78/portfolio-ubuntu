@@ -52,8 +52,8 @@ export class Window extends Component {
     resizeBoundries = () => {
         this.setState({
             parentSize: {
-                height: window.innerHeight //parent height
-                    - (window.innerHeight * (this.state.height / 100.0))  // this window's height
+                height: (window.innerHeight - 32) //parent height
+                    - ((window.innerHeight - 32) * (this.state.height / 100.0))  // this window's height
                     - 28 // some padding
                 ,
                 width: window.innerWidth // parent width
@@ -185,7 +185,10 @@ export class Window extends Component {
                         ? <Settings changeBackgroundImage={this.props.changeBackgroundImage} currBgImgName={this.props.bg_image_name} />
                         : <WindowMainScreen screen={this.props.screen} title={this.props.title}
                             addFolder={this.props.id === "terminal" ? this.props.addFolder : null}
-                            openApp={this.props.openApp} />)}
+                            openApp={this.props.openApp}
+                            closed={this.props.closed}
+                            appProps={this.props.appProps}
+                            wifi={this.props.wifi} />)}
                 </div>
             </Draggable >
         )
@@ -291,7 +294,7 @@ export class WindowMainScreen extends Component {
     render() {
         return (
             <div className={"w-full flex-grow z-20 max-h-full overflow-y-auto windowMainScreen" + (this.state.setDarkBg ? " bg-ub-drk-abrgn " : " bg-ub-cool-grey")}>
-                {this.props.addFolder ? displayTerminal(this.props.addFolder, this.props.openApp) : this.props.screen()}
+                {this.props.addFolder ? displayTerminal(this.props.addFolder, this.props.openApp) : this.props.screen({ openApp: this.props.openApp, closed: this.props.closed, appProps: this.props.appProps, wifi: this.props.wifi })}
             </div>
         )
     }

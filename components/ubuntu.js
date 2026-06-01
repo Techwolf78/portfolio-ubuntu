@@ -10,9 +10,14 @@ export default class Ubuntu extends Component {
 		super();
 		this.state = {
 			screen_locked: false,
-			bg_image_name: 'wall-2',
+			bg_image_name: 'wall-9',
 			booting_screen: true,
-			shutDownScreen: false
+			shutDownScreen: false,
+			volume: 80,
+			brightness: 100,
+			wifi: true,
+			matrixRain: false,
+			muteSound: false
 		};
 	}
 
@@ -20,9 +25,37 @@ export default class Ubuntu extends Component {
 		this.getLocalData();
 	}
 
+	playStartupSound = () => {
+		if (this.state.muteSound) return;
+		const audio = new Audio('./audio/startup.mp3');
+		audio.volume = this.state.volume / 100;
+		audio.play().catch(err => console.log("Autoplay blocked:", err));
+	}
+
+	changeVolume = (val) => {
+		this.setState({ volume: val });
+	}
+
+	changeBrightness = (val) => {
+		this.setState({ brightness: val });
+	}
+
+	toggleWifi = () => {
+		this.setState({ wifi: !this.state.wifi });
+	}
+
+	toggleMatrixRain = () => {
+		this.setState({ matrixRain: !this.state.matrixRain });
+	}
+
+	toggleMuteSound = () => {
+		this.setState({ muteSound: !this.state.muteSound });
+	}
+
 	setTimeOutBootScreen = () => {
 		setTimeout(() => {
 			this.setState({ booting_screen: false });
+			this.playStartupSound();
 		}, 2000);
 	};
 
@@ -108,7 +141,12 @@ export default class Ubuntu extends Component {
 
 	render() {
 		return (
-			<div className="w-screen h-screen overflow-hidden" id="monitor-screen">
+			<div className="w-screen h-screen overflow-hidden relative" id="monitor-screen">
+				{/* Brightness filter overlay */}
+				<div 
+					className="pointer-events-none absolute top-0 left-0 w-full h-full z-[100] bg-black" 
+					style={{ opacity: `${(100 - this.state.brightness) * 0.007}` }} 
+				/>
 				<LockScreen
 					isLocked={this.state.screen_locked}
 					bgImgName={this.state.bg_image_name}
@@ -119,8 +157,25 @@ export default class Ubuntu extends Component {
 					isShutDown={this.state.shutDownScreen}
 					turnOn={this.turnOn}
 				/>
-				<Navbar lockScreen={this.lockScreen} shutDown={this.shutDown} />
-				<Desktop bg_image_name={this.state.bg_image_name} changeBackgroundImage={this.changeBackgroundImage} />
+				<Navbar 
+					lockScreen={this.lockScreen} 
+					shutDown={this.shutDown}
+					volume={this.state.volume}
+					brightness={this.state.brightness}
+					wifi={this.state.wifi}
+					muteSound={this.state.muteSound}
+					changeVolume={this.changeVolume}
+					changeBrightness={this.changeBrightness}
+					toggleWifi={this.toggleWifi}
+					toggleMuteSound={this.toggleMuteSound}
+				/>
+				<Desktop 
+					bg_image_name={this.state.bg_image_name} 
+					changeBackgroundImage={this.changeBackgroundImage} 
+					wifi={this.state.wifi}
+					matrixRain={this.state.matrixRain}
+					toggleMatrixRain={this.toggleMatrixRain}
+				/>
 			</div>
 		);
 	}

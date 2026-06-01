@@ -70,7 +70,7 @@ export class AllApplications extends React.Component {
 
     render() {
         return (
-            <div className={"absolute h-full top-7 w-full z-20 pl-12 justify-center md:pl-20 border-black border-opacity-60 bg-black bg-opacity-70"}>
+            <div className={"absolute h-[calc(100%-2rem)] top-8 w-full z-20 pl-12 justify-center md:pl-20 border-black border-opacity-60 bg-black bg-opacity-70"}>
                 <div className={"flex md:pr-20 pt-5 align-center justify-center"}>
                     <div className={"flex w-2/3 h-full items-center pl-2 pr-2 bg-white border-black border-width-2 rounded-xl overflow-hidden md:w-1/3 "}>
                         <img className={"w-5 h-5"} alt="search icon" src={'./images/logos/search.png'} />

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import BackgroundImage from '../util components/background-image';
+import MatrixRain from '../util components/matrix_rain';
 import SideBar from './side_bar';
 import apps from '../../apps.config';
 import Window from '../base/window';
@@ -31,6 +32,8 @@ export class Desktop extends Component {
                 default: false,
             },
             showNameBar: false,
+            saved_files: [],
+            app_props: {}
         }
     }
 
@@ -42,10 +45,13 @@ export class Desktop extends Component {
         this.setContextListeners();
         this.setEventListeners();
         this.checkForNewFolders();
+        this.loadSavedFiles();
+        window.addEventListener('desktop-files-updated', this.loadSavedFiles);
     }
 
     componentWillUnmount() {
         this.removeContextListeners();
+        window.removeEventListener('desktop-files-updated', this.loadSavedFiles);
     }
 
     checkForNewFolders = () => {
@@ -68,6 +74,11 @@ export class Desktop extends Component {
             });
             this.updateAppsData();
         }
+    }
+
+    loadSavedFiles = () => {
+        const files = localStorage.getItem('desktop_files') ? JSON.parse(localStorage.getItem('desktop_files')) : [];
+        this.setState({ saved_files: files });
     }
 
     setEventListeners = () => {
@@ -250,6 +261,22 @@ export class Desktop extends Component {
                 );
             }
         });
+
+        if (this.state.saved_files) {
+            this.state.saved_files.forEach((file, index) => {
+                const props = {
+                    name: file.name,
+                    id: file.id,
+                    icon: './themes/Yaru/apps/gedit.png',
+                    openApp: () => this.openApp('gedit_editor', { fileId: file.id, fileName: file.name, fileContent: file.content }),
+                    isExternalApp: false
+                }
+                appsJsx.push(
+                    <UbuntuApp key={'file-' + index} {...props} />
+                );
+            });
+        }
+
         return appsJsx;
     }
 
@@ -272,6 +299,8 @@ export class Desktop extends Component {
                     minimized: this.state.minimized_windows[app.id],
                     changeBackgroundImage: this.props.changeBackgroundImage,
                     bg_image_name: this.props.bg_image_name,
+                    appProps: this.state.app_props?.[app.id] || null,
+                    wifi: this.props.wifi,
                 }
 
                 windowsJsx.push(
@@ -347,7 +376,7 @@ export class Desktop extends Component {
         return result;
     }
 
-    openApp = (objId) => {
+    openApp = (objId, openProps = null) => {
 
         // google analytics
         ReactGA.event({
@@ -358,57 +387,64 @@ export class Desktop extends Component {
         // if the app is disabled
         if (this.state.disabled_apps[objId]) return;
 
-        if (this.state.minimized_windows[objId]) {
-            // focus this app's window
-            this.focus(objId);
-
-            // set window's last position
-            var r = document.querySelector("#" + objId);
-            r.style.transform = `translate(${r.style.getPropertyValue("--window-transform-x")},${r.style.getPropertyValue("--window-transform-y")}) scale(1)`;
-
-            // tell childs that his app has been not minimised
-            let minimized_windows = this.state.minimized_windows;
-            minimized_windows[objId] = false;
-            this.setState({ minimized_windows: minimized_windows });
-            return;
+        let app_props = this.state.app_props || {};
+        if (openProps) {
+            app_props[objId] = openProps;
         }
 
-        //if app is already opened
-        if (this.app_stack.includes(objId)) this.focus(objId);
-        else {
-            let closed_windows = this.state.closed_windows;
-            let favourite_apps = this.state.favourite_apps;
-            var frequentApps = localStorage.getItem('frequentApps') ? JSON.parse(localStorage.getItem('frequentApps')) : [];
-            var currentApp = frequentApps.find(app => app.id === objId);
-            if (currentApp) {
-                frequentApps.forEach((app) => {
-                    if (app.id === currentApp.id) {
-                        app.frequency += 1; // increase the frequency if app is found 
-                    }
-                });
-            } else {
-                frequentApps.push({ id: objId, frequency: 1 }); // new app opened
+        this.setState({ app_props }, () => {
+            if (this.state.minimized_windows[objId]) {
+                // focus this app's window
+                this.focus(objId);
+
+                // set window's last position
+                var r = document.querySelector("#" + objId);
+                r.style.transform = `translate(${r.style.getPropertyValue("--window-transform-x")},${r.style.getPropertyValue("--window-transform-y")}) scale(1)`;
+
+                // tell childs that his app has been not minimised
+                let minimized_windows = this.state.minimized_windows;
+                minimized_windows[objId] = false;
+                this.setState({ minimized_windows: minimized_windows });
+                return;
             }
 
-            frequentApps.sort((a, b) => {
-                if (a.frequency < b.frequency) {
-                    return 1;
+            //if app is already opened
+            if (this.app_stack.includes(objId)) this.focus(objId);
+            else {
+                let closed_windows = this.state.closed_windows;
+                let favourite_apps = this.state.favourite_apps;
+                var frequentApps = localStorage.getItem('frequentApps') ? JSON.parse(localStorage.getItem('frequentApps')) : [];
+                var currentApp = frequentApps.find(app => app.id === objId);
+                if (currentApp) {
+                    frequentApps.forEach((app) => {
+                        if (app.id === currentApp.id) {
+                            app.frequency += 1; // increase the frequency if app is found 
+                        }
+                    });
+                } else {
+                    frequentApps.push({ id: objId, frequency: 1 }); // new app opened
                 }
-                if (a.frequency > b.frequency) {
-                    return -1;
-                }
-                return 0; // sort according to decreasing frequencies
-            });
 
-            localStorage.setItem("frequentApps", JSON.stringify(frequentApps));
+                frequentApps.sort((a, b) => {
+                    if (a.frequency < b.frequency) {
+                        return 1;
+                    }
+                    if (a.frequency > b.frequency) {
+                        return -1;
+                    }
+                    return 0; // sort according to decreasing frequencies
+                });
 
-            setTimeout(() => {
-                favourite_apps[objId] = true; // adds opened app to sideBar
-                closed_windows[objId] = false; // openes app's window
-                this.setState({ closed_windows, favourite_apps, allAppsView: false }, this.focus(objId));
-                this.app_stack.push(objId);
-            }, 200);
-        }
+                localStorage.setItem("frequentApps", JSON.stringify(frequentApps));
+
+                setTimeout(() => {
+                    favourite_apps[objId] = true; // adds opened app to sideBar
+                    closed_windows[objId] = false; // openes app's window
+                    this.setState({ closed_windows, favourite_apps, allAppsView: false }, this.focus(objId));
+                    this.app_stack.push(objId);
+                }, 200);
+            }
+        });
     }
 
     closeApp = (objId) => {
@@ -427,7 +463,10 @@ export class Desktop extends Component {
         if (this.initFavourite[objId] === false) favourite_apps[objId] = false; // if user default app is not favourite, remove from sidebar
         closed_windows[objId] = true; // closes the app's window
 
-        this.setState({ closed_windows, favourite_apps });
+        let app_props = this.state.app_props || {};
+        app_props[objId] = null;
+
+        this.setState({ closed_windows, favourite_apps, app_props });
     }
 
     focus = (objId) => {
@@ -500,12 +539,12 @@ export class Desktop extends Component {
             <div className={" h-full w-full flex flex-col items-end justify-start content-start flex-wrap-reverse pt-8 bg-transparent relative overflow-hidden overscroll-none window-parent"}>
 
                 {/* Window Area */}
-                <div className="absolute h-full w-full bg-transparent" data-context="desktop-area">
+                <div className="absolute top-8 left-0 w-full h-[calc(100%-2rem)] bg-transparent" data-context="desktop-area">
                     {this.renderWindows()}
                 </div>
 
-                {/* Background Image */}
-                <BackgroundImage img={this.props.bg_image_name} />
+                {/* Background Image / Matrix Rain */}
+                {this.props.matrixRain ? <MatrixRain /> : <BackgroundImage img={this.props.bg_image_name} />}
 
                 {/* Ubuntu Side Menu Bar */}
                 <SideBar apps={apps}
@@ -520,7 +559,9 @@ export class Desktop extends Component {
                     openAppByAppId={this.openApp} />
 
                 {/* Desktop Apps */}
-                {this.renderDesktopApps()}
+                <div className="absolute top-10 left-0 w-full h-[calc(100%-2.5rem)] flex flex-col items-end justify-start content-start flex-wrap-reverse bg-transparent pointer-events-none z-10" data-context="desktop-area">
+                    {this.renderDesktopApps()}
+                </div>
 
                 {/* Context Menus */}
                 <DesktopMenu active={this.state.context_menus.desktop} openApp={this.openApp} addNewFolder={this.addNewFolder} />
